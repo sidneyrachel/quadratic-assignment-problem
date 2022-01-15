@@ -1,5 +1,5 @@
 from utils import file, iterated_local_search, tabu_search, constraint_solving
-
+from datetime import datetime
 
 config = {
     'iterated_local_search': {
@@ -21,6 +21,8 @@ if __name__ == '__main__':
     flows, distances = file.read_external_file('had12.dat')
 
     algorithm = 'iterated_local_search'
+
+    start_time = datetime.now()
 
     if algorithm == 'iterated_local_search':
         algorithm_config = config['iterated_local_search']
@@ -50,4 +52,7 @@ if __name__ == '__main__':
     else:
         raise Exception(f'Algorithm is unknown. Algorithm: {algorithm}.')
 
+    end_time = datetime.now()
+
     print(f'Best assignments: {assignments}. Objective value: {objective_value}.')
+    print(f'Duration: {end_time - start_time}')
