@@ -20,6 +20,7 @@ config = {
 if __name__ == '__main__':
     flows, distances = file.read_external_file(filename='had12.dat')
     algorithm_config = config['iterated_local_search']
+
     assignments, objective_value = iterated_local_search.run_iterated_local_search(
         flows,
         distances,
@@ -31,3 +32,5 @@ if __name__ == '__main__':
         worst_acceptance_probability=algorithm_config['worst_acceptance_probability'],
         local_improvement_mode=algorithm_config['local_improvement_mode']
     )
+
+    print(f'Best assignments: {assignments}. Objective value: {objective_value}.')
