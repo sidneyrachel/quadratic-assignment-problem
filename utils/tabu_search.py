@@ -54,7 +54,7 @@ def run_tabu_search(
     number_of_facilities = len(flows)
     tabu_list = deque(maxlen=tabu_size)
     current_assignments = np.random.permutation(np.arange(number_of_facilities))
-    best_assignments = current_assignments
+    best_assignments = deepcopy(current_assignments)
     number_of_neighbors = n_size(number_of_facilities)
     best_objective_value = cost.calculate_objective_value(flows=flows, distances=distances, assignments=best_assignments)
 
