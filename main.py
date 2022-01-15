@@ -18,9 +18,9 @@ config = {
 }
 
 if __name__ == '__main__':
-    flows, distances = file.read_external_file('test.dat')
+    flows, distances = file.read_external_file('had12.dat')
 
-    algorithm = 'tabu_search'
+    algorithm = 'iterated_local_search'
 
     if algorithm == 'iterated_local_search':
         algorithm_config = config['iterated_local_search']
