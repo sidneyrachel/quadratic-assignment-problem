@@ -1,5 +1,6 @@
 from utils import cost
 
+
 class Individual:
     def __init__(self, assignments, flows, distances):
         self.assignments = assignments
