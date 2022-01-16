@@ -34,6 +34,70 @@ if __name__ == '__main__':
         help='Choose filename of the problem from qapdata folder. Example: had12.dat.',
         required=True
     )
+    # iterative local search
+    parser.add_argument(
+        '-iwap',
+        '--iterative_worst_acceptance_probability',
+        help='Worst acceptance probability in iterative local search.',
+        type=float,
+        default=config['iterated_local_search']['worst_acceptance_probability']
+    )
+    parser.add_argument(
+        '-inoit',
+        '--iterative_number_of_iterations',
+        help='Number of iterations in iterative local search.',
+        type=int,
+        default=config['iterated_local_search']['number_of_iterations']
+    )
+    parser.add_argument(
+        '-inoin',
+        '--iterative_number_of_individuals',
+        help='Number of individuals in iterative local search.',
+        type=int,
+        default=config['iterated_local_search']['number_of_individuals']
+    )
+    parser.add_argument(
+        '-ist',
+        '--iterative_shuffle_tolerance',
+        help='Shuffle tolerance in iterative local search.',
+        type=int,
+        default=config['iterated_local_search']['shuffle_tolerance']
+    )
+    parser.add_argument(
+        '-inos',
+        '--iterative_number_of_shuffles',
+        help='Number of shuffles in iterative local search.',
+        type=int,
+        default=config['iterated_local_search']['number_of_shuffles']
+    )
+    parser.add_argument(
+        '-ilii',
+        '--iterative_local_improvement_iterations',
+        help='Local improvement iterations in iterative local search.',
+        type=int,
+        default=config['iterated_local_search']['local_improvement_iterations']
+    )
+    parser.add_argument(
+        '-ilim',
+        '--iterative_local_improvement_mode',
+        help='Local improvement mode in iterative local search. Example: two_opt, three_opt, four_opt.',
+        default=config['iterated_local_search']['local_improvement_mode']
+    )
+    # tabu search
+    parser.add_argument(
+        '-ts',
+        '--tabu_size',
+        help='Tabu size in tabu search.',
+        type=int,
+        default=config['tabu_search']['tabu_size']
+    )
+    parser.add_argument(
+        '-tnoit',
+        '--tabu_number_of_iterations',
+        help='Number of iterations in tabu search.',
+        type=int,
+        default=config['tabu_search']['number_of_iterations']
+    )
     args = vars(parser.parse_args())
 
     flows, distances = file.read_external_file(args['filename'])
@@ -41,18 +105,16 @@ if __name__ == '__main__':
     start_time = datetime.now()
 
     if args['algorithm'] == 'ils':
-        algorithm_config = config['iterated_local_search']
-
         assignments, objective_value = iterated_local_search.run_iterated_local_search(
             flows,
             distances,
-            number_of_individuals=algorithm_config['number_of_individuals'],
-            number_of_iterations=algorithm_config['number_of_iterations'],
-            shuffle_tolerance=algorithm_config['shuffle_tolerance'],
-            number_of_shuffles=algorithm_config['number_of_shuffles'],
-            local_improvement_iterations=algorithm_config['local_improvement_iterations'],
-            worst_acceptance_probability=algorithm_config['worst_acceptance_probability'],
-            local_improvement_mode=algorithm_config['local_improvement_mode']
+            number_of_individuals=args['iterative_number_of_individuals'],
+            number_of_iterations=args['iterative_number_of_iterations'],
+            shuffle_tolerance=args['iterative_shuffle_tolerance'],
+            number_of_shuffles=args['iterative_number_of_shuffles'],
+            local_improvement_iterations=args['iterative_local_improvement_iterations'],
+            worst_acceptance_probability=args['iterative_worst_acceptance_probability'],
+            local_improvement_mode=args['iterative_local_improvement_mode']
         )
     elif args['algorithm'] == 'ts':
         algorithm_config = config['tabu_search']
@@ -60,8 +122,8 @@ if __name__ == '__main__':
         assignments, objective_value = tabu_search.run_tabu_search(
             flows,
             distances,
-            tabu_size=algorithm_config['tabu_size'],
-            number_of_iterations=algorithm_config['number_of_iterations']
+            tabu_size=args['tabu_size'],
+            number_of_iterations=args['tabu_number_of_iterations']
         )
     elif args['algorithm'] == 'cs':
         assignments, objective_value = constraint_solving.run_minizinc(flows=flows, distances=distances)
