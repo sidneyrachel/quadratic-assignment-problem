@@ -1,3 +1,8 @@
+# reference:
+# https://github.com/shah314/cilsassignment/blob/master/cILSAssignment.cpp
+# https://github.com/BlackMooth/Quadratic-Assignment-Problem
+# https://github.com/Lolik-Bolik/Quadratic_Assign_Problem/blob/master/algorithms/iterated_local_search.py
+
 import numpy as np
 from classes import Individual
 import random

@@ -1,3 +1,7 @@
+# Reference:
+# https://github.com/Giant316/quadraticAssignment/blob/main/QAP.ipynb
+# https://github.com/100/Solid/blob/master/Solid/TabuSearch.py
+
 import numpy as np
 from collections import deque
 from copy import deepcopy
