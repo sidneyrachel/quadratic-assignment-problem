@@ -13,7 +13,7 @@ def run_minizinc(flows, distances):
     result_len = len(result)
 
     for idx in range(result_len):
-        print(f'Iteration: {idx}. '
+        print(f'Solution: {idx}. '
               f'Assignments: {result[idx].assigned_facilities}. '
               f'Objective: {result[idx].objective}.')
 
