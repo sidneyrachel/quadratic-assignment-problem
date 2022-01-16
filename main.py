@@ -1,5 +1,6 @@
 from utils import file, iterated_local_search, tabu_search, constraint_solving
 from datetime import datetime
+import argparse
 
 config = {
     'iterated_local_search': {
@@ -18,13 +19,28 @@ config = {
 }
 
 if __name__ == '__main__':
-    flows, distances = file.read_external_file('had12.dat')
+    parser = argparse.ArgumentParser(description='Algorithms for solving quadratic assignment problem.')
+    parser.add_argument(
+        '-a',
+        '--algorithm',
+        help='Choose one of the algorithms: ils (iterative local search), '
+             'ts (tabu search), '
+             'cs (constraint solving with Minizinc). Example: ils.',
+        required=True
+    )
+    parser.add_argument(
+        '-f',
+        '--filename',
+        help='Choose filename of the problem from qapdata folder. Example: had12.dat.',
+        required=True
+    )
+    args = vars(parser.parse_args())
 
-    algorithm = 'iterated_local_search'
+    flows, distances = file.read_external_file(args['filename'])
 
     start_time = datetime.now()
 
-    if algorithm == 'iterated_local_search':
+    if args['algorithm'] == 'ils':
         algorithm_config = config['iterated_local_search']
 
         assignments, objective_value = iterated_local_search.run_iterated_local_search(
@@ -38,7 +54,7 @@ if __name__ == '__main__':
             worst_acceptance_probability=algorithm_config['worst_acceptance_probability'],
             local_improvement_mode=algorithm_config['local_improvement_mode']
         )
-    elif algorithm == 'tabu_search':
+    elif args['algorithm'] == 'ts':
         algorithm_config = config['tabu_search']
 
         assignments, objective_value = tabu_search.run_tabu_search(
@@ -47,10 +63,10 @@ if __name__ == '__main__':
             tabu_size=algorithm_config['tabu_size'],
             number_of_iterations=algorithm_config['number_of_iterations']
         )
-    elif algorithm == 'constraint_solving':
+    elif args['algorithm'] == 'cs':
         assignments, objective_value = constraint_solving.run_minizinc(flows=flows, distances=distances)
     else:
-        raise Exception(f'Algorithm is unknown. Algorithm: {algorithm}.')
+        raise Exception(f"Algorithm is unknown. Algorithm: {args['algorithm']}.")
 
     end_time = datetime.now()
 
