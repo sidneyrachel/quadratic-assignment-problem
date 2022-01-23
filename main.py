@@ -134,7 +134,7 @@ if __name__ == '__main__':
             number_of_iterations=5000,
             start_temperature=5,
             schedule_constant=0.99,
-            schedule='exponential'
+            schedule='geometric'
         )
     else:
         raise Exception(f"Algorithm is unknown. Algorithm: {args['algorithm']}.")
