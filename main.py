@@ -1,4 +1,4 @@
-from utils import file, iterated_local_search, tabu_search, constraint_solving
+from utils import file, iterated_local_search, tabu_search, constraint_solving, simulated_annealing
 from datetime import datetime
 import argparse
 
@@ -127,6 +127,15 @@ if __name__ == '__main__':
         )
     elif args['algorithm'] == 'cs':
         assignments, objective_value = constraint_solving.run_minizinc(flows=flows, distances=distances)
+    elif args['algorithm'] == 'sa':
+        assignments, objective_value = simulated_annealing.run_simulated_annealing(
+            flows=flows,
+            distances=distances,
+            number_of_iterations=5000,
+            start_temperature=5,
+            schedule_constant=0.99,
+            schedule='exponential'
+        )
     else:
         raise Exception(f"Algorithm is unknown. Algorithm: {args['algorithm']}.")
 
