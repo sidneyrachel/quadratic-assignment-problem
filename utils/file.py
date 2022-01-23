@@ -15,7 +15,7 @@ def read_matrix(lines, current_idx, n):
 
 
 def read_external_file(filename):
-    filepath = '../qapdata/' + filename
+    filepath = 'qapdata/' + filename
     file = open(filepath, 'r')
     lines = [line.strip() for line in file.readlines()]
 

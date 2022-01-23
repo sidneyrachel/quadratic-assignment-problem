@@ -2,7 +2,7 @@ from minizinc import Instance, Model, Solver
 
 
 def run_minizinc(flows, distances):
-    qap = Model('../qap.mzn')
+    qap = Model('qap.mzn')
     geocode = Solver.lookup('gecode')
     instance = Instance(geocode, qap)
     instance['n'] = len(flows)
