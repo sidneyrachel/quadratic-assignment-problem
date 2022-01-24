@@ -1,7 +1,6 @@
 # Reference:
-# https://arxiv.org/pdf/1405.5050.pdf
-# https://github.com/100/Solid/blob/master/Solid/GeneticAlgorithm.py
-# https://github.com/remiomosowon/pyeasyga/blob/develop/pyeasyga/pyeasyga.py
+# https://github.com/cssartori/ga-qap
+# https://github.com/BlackMooth/Quadratic-Assignment-Problem/blob/master/Genetic_Algorithm.cpp
 
 import numpy as np
 from utils import iterated_local_search
