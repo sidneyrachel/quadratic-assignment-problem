@@ -1,6 +1,7 @@
 # Reference:
 # https://arxiv.org/pdf/1405.5050.pdf
 # https://github.com/100/Solid/blob/master/Solid/GeneticAlgorithm.py
+# https://github.com/remiomosowon/pyeasyga/blob/develop/pyeasyga/pyeasyga.py
 
 import numpy as np
 from utils import iterated_local_search
@@ -27,6 +28,7 @@ def select(n, population):
             if r <= sum_:
                 res.append(deepcopy(population[i]))
                 break
+
     return res
 
 
@@ -64,12 +66,9 @@ def crossover(
     )
 
 
-def mutate(mutation_rate, number_of_facilities, individual):
-    if mutation_rate >= random():
-        indices = np.random.permutation(np.arange(number_of_facilities))
-        individual.exchange(facility1=indices[0], facility2=indices[1])
-
-    return individual
+def mutate(number_of_facilities, individual):
+    indices = np.random.permutation(np.arange(number_of_facilities))
+    individual.exchange(facility1=indices[0], facility2=indices[1])
 
 
 def run_genetic_algorithm(
@@ -90,46 +89,50 @@ def run_genetic_algorithm(
     # TODO: MAKE THIS MORE EFFICIENT
     sorted_population = iterated_local_search.sort_population(population=population)
     best_individual = deepcopy(sorted_population[0])
-    num_copy = max(int((1 - crossover_rate) * len(population)), 2)
-    num_crossover = len(population) - num_copy
 
     for idx in range(number_of_iterations):
-        population = select(n=num_copy, population=population)
-        parents = select(n=2, population=population)
+        new_population = []
 
-        crossover_idx = 0
-        while crossover_idx < num_crossover:
-            new_individual1, new_individual2 = crossover(
-                parent1=parents[0],
-                parent2=parents[1],
-                number_of_facilities=number_of_facilities,
-                flows=flows,
-                distances=distances
-            )
+        while len(new_population) < number_of_individuals:
+            [parent1, parent2] = select(n=2, population=population)
 
-            population.append(new_individual1)
-            crossover_idx += 1
+            can_crossover = random() < crossover_rate
+            can_mutate = random() < mutation_rate
 
-            if crossover_idx + 1 < num_crossover:
-                population.append(new_individual2)
-                crossover_idx += 1
+            if can_crossover:
+                child1, child2 = crossover(
+                    parent1=parent1,
+                    parent2=parent2,
+                    number_of_facilities=number_of_facilities,
+                    flows=flows,
+                    distances=distances
+                )
+            else:
+                child1 = parent1
+                child2 = parent2
 
-        population = list([
-            mutate(
-                mutation_rate=mutation_rate,
-                number_of_facilities=number_of_facilities,
-                individual=individual
-            ) for individual in population
-        ])
+            if can_mutate:
+                mutate(
+                    number_of_facilities=number_of_facilities,
+                    individual=child1
+                )
+                mutate(
+                    number_of_facilities=number_of_facilities,
+                    individual=child2
+                )
 
-        # TODO: MAKE THIS MORE EFFICIENT
+            new_population.append(child1)
+            if len(new_population) < number_of_individuals:
+                new_population.append(child2)
+
+        new_population[0] = best_individual
+        population = new_population
         sorted_population = iterated_local_search.sort_population(population=population)
-        candidate_best_individual = sorted_population[0]
-
-        if candidate_best_individual.objective_value < best_individual.objective_value:
-            best_individual = deepcopy(candidate_best_individual)
+        best_individual = deepcopy(sorted_population[0])
 
         print(f'[GA] Iteration: {(idx + 1)}. '
               f'Objective value: {best_individual.objective_value}.')
+
+    best_individual.normalize_final_assignments()
 
     return best_individual.assignments, best_individual.objective_value

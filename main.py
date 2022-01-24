@@ -2,7 +2,6 @@ from utils import file, \
     iterated_local_search, \
     tabu_search, \
     constraint_solving, \
-    simulated_annealing, \
     genetic_algorithm
 from datetime import datetime
 import argparse
@@ -139,16 +138,7 @@ if __name__ == '__main__':
             number_of_individuals=50,
             crossover_rate=0.8,
             mutation_rate=0.8,
-            number_of_iterations=5000
-        )
-    elif args['algorithm'] == 'sa':
-        assignments, objective_value = simulated_annealing.run_simulated_annealing(
-            flows=flows,
-            distances=distances,
-            number_of_iterations=5000,
-            start_temperature=5,
-            schedule_constant=0.99,
-            schedule='geometric'
+            number_of_iterations=1000
         )
     else:
         raise Exception(f"Algorithm is unknown. Algorithm: {args['algorithm']}.")
