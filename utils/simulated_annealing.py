@@ -1,3 +1,4 @@
+# TODO: REPLACE THIS WITH GENETIC ALGORITHM?
 # Reference:
 # https://github.com/Giant316/quadraticAssignment/blob/main/QAP.ipynb
 # https://github.com/100/Solid/blob/master/Solid/SimulatedAnnealing.py

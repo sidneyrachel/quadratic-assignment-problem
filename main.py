@@ -1,4 +1,9 @@
-from utils import file, iterated_local_search, tabu_search, constraint_solving, simulated_annealing
+from utils import file, \
+    iterated_local_search, \
+    tabu_search, \
+    constraint_solving, \
+    simulated_annealing, \
+    genetic_algorithm
 from datetime import datetime
 import argparse
 
@@ -106,8 +111,8 @@ if __name__ == '__main__':
 
     if args['algorithm'] == 'ils':
         assignments, objective_value = iterated_local_search.run_iterated_local_search(
-            flows,
-            distances,
+            flows=flows,
+            distances=distances,
             number_of_individuals=args['iterative_number_of_individuals'],
             number_of_iterations=args['iterative_number_of_iterations'],
             shuffle_tolerance=args['iterative_shuffle_tolerance'],
@@ -120,13 +125,22 @@ if __name__ == '__main__':
         algorithm_config = config['tabu_search']
 
         assignments, objective_value = tabu_search.run_tabu_search(
-            flows,
-            distances,
+            flows=flows,
+            distances=distances,
             tabu_size=args['tabu_size'],
             number_of_iterations=args['tabu_number_of_iterations']
         )
     elif args['algorithm'] == 'cs':
         assignments, objective_value = constraint_solving.run_minizinc(flows=flows, distances=distances)
+    elif args['algorithm'] == 'ga':
+        assignments, objective_value = genetic_algorithm.run_genetic_algorithm(
+            flows=flows,
+            distances=distances,
+            number_of_individuals=50,
+            crossover_rate=0.8,
+            mutation_rate=0.8,
+            number_of_iterations=5000
+        )
     elif args['algorithm'] == 'sa':
         assignments, objective_value = simulated_annealing.run_simulated_annealing(
             flows=flows,
