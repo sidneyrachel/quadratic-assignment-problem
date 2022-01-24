@@ -135,10 +135,10 @@ if __name__ == '__main__':
         assignments, objective_value = genetic_algorithm.run_genetic_algorithm(
             flows=flows,
             distances=distances,
-            number_of_individuals=50,
-            crossover_rate=0.8,
-            mutation_rate=0.8,
-            number_of_iterations=1000
+            number_of_individuals=3,
+            crossover_rate=0.7,
+            number_of_iterations=1000,
+            worst_acceptance_probability=0.1
         )
     else:
         raise Exception(f"Algorithm is unknown. Algorithm: {args['algorithm']}.")
