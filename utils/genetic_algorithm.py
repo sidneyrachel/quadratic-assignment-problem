@@ -128,10 +128,10 @@ def crossover(
     return best_child_individual
 
 
-def perturbation(child_individual, number_of_perturbations, number_of_facilities):
+def perturbation(individual, number_of_perturbations, number_of_facilities):
     for idx in range(number_of_perturbations):
         indices = np.random.permutation(np.arange(number_of_facilities))
-        child_individual.exchange(facility1=indices[0], facility2=indices[1])
+        individual.exchange(facility1=indices[0], facility2=indices[1])
 
 
 def limited_iterated_search(
@@ -154,7 +154,7 @@ def limited_iterated_search(
 
     for idx in range(int(number_of_iterations * 0.1)):
         perturbation(
-            child_individual=child_individual,
+            individual=child_individual,
             number_of_perturbations=number_of_perturbations,
             number_of_facilities=number_of_facilities
         )
@@ -212,27 +212,30 @@ def run_genetic_algorithm(
         number_of_individuals=number_of_individuals
     )
 
-    for current_individual in population:
+    for individual in population:
         iterated_local_search.two_opt_improvement(
-            individual=current_individual,
+            individual=individual,
             worst_acceptance_probability=worst_acceptance_probability
         )
 
-    # TODO: MAKE THIS MORE EFFICIENT
     population = iterated_local_search.sort_population(population=population)
     best_individual = deepcopy(population[0])
-    u = 1
-    last_mutation = 0
+    number_of_shifts = 1
+    last_mutated_generation = 0
     mutation_type = 1
-    iter_best = 0
+    best_iteration = 0
 
     for generation in range(1, number_of_iterations + 1):
         offspring = []
-        while len(offspring) < int(number_of_individuals/2):
+
+        while len(offspring) < int(number_of_individuals * 0.5):
             if selection_algorithm == 'roulette_wheel':
-                [parent1, parent2] = roulette_wheel_selection(number_of_selections=2, population=population)
+                [parent1_individual, parent2_individual] = roulette_wheel_selection(
+                    number_of_selections=2,
+                    population=population
+                )
             elif selection_algorithm == 'tournament':
-                [parent1, parent2] = tournament_selection(
+                [parent1_individual, parent2_individual] = tournament_selection(
                     number_of_selections=2,
                     population=population,
                     number_of_individuals=number_of_individuals,
@@ -241,67 +244,72 @@ def run_genetic_algorithm(
             else:
                 raise Exception(f'Unknown selection algorithm. Selection algorithm: {selection_algorithm}.')
 
-            child = crossover(
-                parent1=parent1,
-                parent2=parent2,
+            child_individual = crossover(
+                parent1=parent1_individual,
+                parent2=parent2_individual,
                 number_of_facilities=number_of_facilities,
                 flows=flows,
                 distances=distances,
                 crossover_rate=crossover_rate
             )
-            child = limited_iterated_search(
-                child_individual=child,
+
+            improved_child_individual = limited_iterated_search(
+                child_individual=child_individual,
                 number_of_iterations=number_of_iterations,
                 number_of_facilities=number_of_facilities,
                 worst_acceptance_probability=worst_acceptance_probability
             )
-            offspring.append(child)
+
+            offspring.append(improved_child_individual)
 
         offspring = iterated_local_search.sort_population(population=offspring)
 
         for idx in range(len(offspring)):
-            offspring_idx = number_of_individuals - 1 - idx
-            if offspring[idx].objective_value < population[offspring_idx].objective_value:
-                population[offspring_idx] = offspring[idx]
+            offspring_mapped_idx = number_of_individuals - 1 - idx
+            if offspring[idx].objective_value < population[offspring_mapped_idx].objective_value:
+                population[offspring_mapped_idx] = offspring[idx]
 
         population = iterated_local_search.sort_population(population=population)
 
         if population[0].objective_value >= best_individual.objective_value \
-                and (generation - last_mutation) > 100 \
-                and (generation - iter_best) > 200 \
-                and (mutation_type == 1):
-            for i in range(number_of_individuals):
-                shift_mutation(individual=population[i], number_of_shifts=u, number_of_facilities=number_of_facilities)
+                and (generation - last_mutated_generation) > 100 \
+                and (generation - best_iteration) > 200:
+            if mutation_type == 1:
+                for i in range(number_of_individuals):
+                    shift_mutation(
+                        individual=population[i],
+                        number_of_shifts=number_of_shifts,
+                        number_of_facilities=number_of_facilities
+                    )
 
-            u += 1
-            if u > number_of_facilities:
-                u = 1
-                mutation_type = 2
+                number_of_shifts += 1
+                if number_of_shifts > number_of_facilities:
+                    number_of_shifts = 1
+                    mutation_type = 2
 
-            population = iterated_local_search.sort_population(population=population)
-            last_mutation = generation
-        elif population[0].objective_value >= best_individual.objective_value \
-                and (generation - last_mutation) > 100 \
-                and (generation - iter_best) > 200 \
-                and (mutation_type == 2):
-            for i in range(number_of_individuals):
-                for j in range(int(number_of_facilities * 0.2)):
-                    indices = np.random.permutation(np.arange(number_of_facilities))
-                    population[i].exchange(facility1=indices[0], facility2=indices[1])
+                population = iterated_local_search.sort_population(population=population)
+                last_mutated_generation = generation
+            elif mutation_type == 2:
+                for i in range(number_of_individuals):
+                    perturbation(
+                        individual=population[i],
+                        number_of_perturbations=int(number_of_facilities * 0.2),
+                        number_of_facilities=number_of_facilities
+                    )
 
-                iterated_local_search.two_opt_improvement(
-                    individual=population[i],
-                    worst_acceptance_probability=worst_acceptance_probability
-                )
+                    iterated_local_search.two_opt_improvement(
+                        individual=population[i],
+                        worst_acceptance_probability=worst_acceptance_probability
+                    )
 
-            population = iterated_local_search.sort_population(population=population)
-            last_mutation = generation
-            mutation_type = 1
+                population = iterated_local_search.sort_population(population=population)
+                last_mutated_generation = generation
+                mutation_type = 1
 
         if population[0].objective_value < best_individual.objective_value:
             best_individual = deepcopy(population[0])
-            iter_best = generation
-            u = 1
+            best_iteration = generation
+            number_of_shifts = 1
 
         print(f'[GA] Iteration: {generation}. '
               f'Objective value: {best_individual.objective_value}.')
