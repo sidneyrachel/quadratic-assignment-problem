@@ -186,12 +186,12 @@ if __name__ == '__main__':
         assignments, objective_value = genetic_algorithm.run_genetic_algorithm(
             flows=flows,
             distances=distances,
-            number_of_individuals=4,
-            crossover_rate=0.7,
-            number_of_iterations=1000,
-            worst_acceptance_probability=0,
-            tournament_size=4,
-            selection_algorithm='tournament'
+            number_of_individuals=args['genetic_number_of_individuals'],
+            crossover_rate=args['genetic_crossover_rate'],
+            number_of_iterations=args['genetic_number_of_iterations'],
+            worst_acceptance_probability=args['genetic_worst_acceptance_probability'],
+            tournament_size=args['genetic_tournament_size'],
+            selection_algorithm=args['genetic_selection_algorithm']
         )
     else:
         raise Exception(f"Algorithm is unknown. Algorithm: {args['algorithm']}.")
