@@ -1,34 +1,67 @@
 # Reference:
 # https://github.com/cssartori/ga-qap
 # https://github.com/BlackMooth/Quadratic-Assignment-Problem/blob/master/Genetic_Algorithm.cpp
+# https://github.com/100/Solid/blob/master/Solid/GeneticAlgorithm.py
 
 import numpy as np
-from utils import iterated_local_search
-from random import shuffle, random, randint
+from utils import iterated_local_search, assignment
+from random import shuffle, random, randint, randrange
 from copy import deepcopy
 from classes import Individual
 
 
-def select(n, population):
+def roulette_wheel_selection(number_of_selections, population):
     shuffle(population)
     total_fitness = sum(individual.objective_value for individual in population)
 
-    if total_fitness != 0:
-        probabilities = list([individual.objective_value / total_fitness for individual in population])
+    if total_fitness > 0:
+        probabilities = [individual.objective_value / total_fitness for individual in population]
     else:
-        return population[0:n]
+        return population[:number_of_selections]
 
-    res = []
-    for _ in range(n):
-        r = random()
-        sum_ = 0
-        for i, x in enumerate(probabilities):
-            sum_ += probabilities[i]
-            if r <= sum_:
-                res.append(deepcopy(population[i]))
+    selections = []
+    for idx in range(number_of_selections):
+        random_number = random()
+        probability_sum = 0
+
+        for i, probability in enumerate(probabilities):
+            probability_sum += probability
+
+            if random_number <= probability_sum:
+                selections.append(deepcopy(population[i]))
                 break
 
-    return res
+    return selections
+
+
+def tournament_selection(number_of_selections, population, number_of_individuals, tournament_size):
+    chosen_population_idx_set = set()
+    chosen_individuals = []
+    member_set = set(range(number_of_individuals))
+
+    for idx in range(number_of_selections):
+        random_idx = assignment.choose_random_element(
+            member_set=member_set,
+            excluded_member_set=chosen_population_idx_set
+        )
+
+        selected_individual = population[random_idx]
+        chosen_population_idx = random_idx
+
+        for i in range(1, tournament_size):
+            random_idx = assignment.choose_random_element(
+                member_set=member_set,
+                excluded_member_set=chosen_population_idx_set.union({chosen_population_idx})
+            )
+
+            if population[random_idx].objective_value < selected_individual.objective_value:
+                selected_individual = population[random_idx]
+                chosen_population_idx = random_idx
+
+        chosen_individuals.append(deepcopy(selected_individual))
+        chosen_population_idx_set.add(chosen_population_idx)
+
+    return chosen_individuals
 
 
 def crossover(
@@ -154,7 +187,9 @@ def run_genetic_algorithm(
     number_of_individuals,
     crossover_rate,
     number_of_iterations,
-    worst_acceptance_probability
+    worst_acceptance_probability,
+    tournament_size,
+    selection_algorithm
 ):
     number_of_facilities = len(flows)
     population = iterated_local_search.generate_initial_population(
@@ -180,7 +215,18 @@ def run_genetic_algorithm(
     for generation in range(1, number_of_iterations + 1):
         offspring = []
         while len(offspring) < int(number_of_individuals/2):
-            [parent1, parent2] = select(n=2, population=population)
+            if selection_algorithm == 'roulette_wheel':
+                [parent1, parent2] = roulette_wheel_selection(number_of_selections=2, population=population)
+            elif selection_algorithm == 'tournament':
+                [parent1, parent2] = tournament_selection(
+                    number_of_selections=2,
+                    population=population,
+                    number_of_individuals=number_of_individuals,
+                    tournament_size=tournament_size
+                )
+            else:
+                raise Exception(f'Unknown selection algorithm. Selection algorithm: {selection_algorithm}.')
+
             child = crossover(
                 parent1=parent1,
                 parent2=parent2,
