@@ -5,7 +5,7 @@
 
 import numpy as np
 from utils import iterated_local_search, assignment
-from random import shuffle, random, randint, randrange
+from random import shuffle, random, randint, randrange, uniform, choice
 from copy import deepcopy
 from classes import Individual
 
@@ -72,7 +72,7 @@ def crossover(
     distances,
     crossover_rate
 ):
-    can_crossover = random() < crossover_rate
+    can_crossover = uniform(0, 1) <= crossover_rate
 
     if not can_crossover:
         if parent1.objective_value < parent2.objective_value:
@@ -80,45 +80,46 @@ def crossover(
         else:
             return parent2
 
-    child = [-1] * number_of_facilities
-    placed = [False] * number_of_facilities
+    child_assignments = [-1] * number_of_facilities
+    placed_locations = [False] * number_of_facilities
 
     for i in range(number_of_facilities):
         if parent1.assignments[i] == parent2.assignments[i]:
-            child[i] = parent1.assignments[i]
-            placed[parent1.assignments[i]] = True
+            child_assignments[i] = parent1.assignments[i]
+            placed_locations[parent1.assignments[i]] = True
 
-    lim = int(number_of_facilities * 0.2)
-    if lim == 0:
-        lim = 1
+    number_of_trials = int(number_of_facilities * 0.2)
+    if number_of_trials == 0:
+        number_of_trials = 1
 
     best_child_individual = None
 
-    for m in range(lim):
-        current_child = deepcopy(child)
-        current_placed = deepcopy(placed)
+    for idx in range(number_of_trials):
+        current_child_assignments = deepcopy(child_assignments)
+        current_placed_locations = deepcopy(placed_locations)
 
         for i in range(number_of_facilities):
-            if current_child[i] == -1:
-                if not current_placed[parent1.assignments[i]] and not current_placed[parent2.assignments[i]]:
-                    rand = random()
-                    if rand < 0.5:
-                        current_child[i] = parent1.assignments[i]
+            if current_child_assignments[i] == -1:
+                if not current_placed_locations[parent1.assignments[i]] and \
+                        not current_placed_locations[parent2.assignments[i]]:
+                    random_number = uniform(0, 1)
+                    if random_number < 0.5:
+                        current_child_assignments[i] = parent1.assignments[i]
                     else:
-                        current_child[i] = parent2.assignments[i]
-                elif not current_placed[parent1.assignments[i]]:
-                    current_child[i] = parent1.assignments[i]
-                elif not current_placed[parent2.assignments[i]]:
-                    current_child[i] = parent2.assignments[i]
+                        current_child_assignments[i] = parent2.assignments[i]
+                elif not current_placed_locations[parent1.assignments[i]]:
+                    current_child_assignments[i] = parent1.assignments[i]
+                elif not current_placed_locations[parent2.assignments[i]]:
+                    current_child_assignments[i] = parent2.assignments[i]
                 else:
-                    location = randint(0, number_of_facilities - 1)
-                    while current_placed[location]:
-                        location = randint(0, number_of_facilities - 1)
-                    current_child[i] = location
+                    location = choice(
+                        [i for i in range(len(current_placed_locations)) if not current_placed_locations[i]]
+                    )
+                    current_child_assignments[i] = location
 
-                current_placed[current_child[i]] = True
+                current_placed_locations[current_child_assignments[i]] = True
 
-        current_child_individual = Individual(assignments=current_child, flows=flows, distances=distances)
+        current_child_individual = Individual(assignments=current_child_assignments, flows=flows, distances=distances)
 
         if best_child_individual is None or \
                 current_child_individual.objective_value < best_child_individual.objective_value:
@@ -127,56 +128,68 @@ def crossover(
     return best_child_individual
 
 
-def perturbation(child, u, number_of_facilities):
-    for idx in range(u):
+def perturbation(child_individual, number_of_perturbations, number_of_facilities):
+    for idx in range(number_of_perturbations):
         indices = np.random.permutation(np.arange(number_of_facilities))
-        child.exchange(facility1=indices[0], facility2=indices[1])
+        child_individual.exchange(facility1=indices[0], facility2=indices[1])
 
 
 def limited_iterated_search(
-    child,
+    child_individual,
     number_of_iterations,
     number_of_facilities
 ):
+    best_individual = deepcopy(child_individual)
+
     iterated_local_search.two_opt_improvement(
-        individual=child,
-        worst_acceptance_probability=-1
+        individual=child_individual,
+        worst_acceptance_probability=0
     )
 
-    u = 2
+    if child_individual.objective_value < best_individual.objective_value:
+        best_individual = deepcopy(child_individual)
+
+    number_of_perturbations = 2
+
     for idx in range(int(number_of_iterations * 0.1)):
-        perturbation(child, u, number_of_facilities)
-
-        u += 1
-        if u > number_of_facilities:
-            u = 2
-
-        iterated_local_search.two_opt_improvement(
-            individual=child,
-            worst_acceptance_probability=-1
+        perturbation(
+            child_individual=child_individual,
+            number_of_perturbations=number_of_perturbations,
+            number_of_facilities=number_of_facilities
         )
 
+        number_of_perturbations += 1
+        if number_of_perturbations > number_of_facilities:
+            number_of_perturbations = 2
 
-def mutate(number_of_facilities, individual):
-    indices = np.random.permutation(np.arange(number_of_facilities))
-    individual.exchange(facility1=indices[0], facility2=indices[1])
+        iterated_local_search.two_opt_improvement(
+            individual=child_individual,
+            worst_acceptance_probability=0
+        )
+
+        if child_individual.objective_value < best_individual.objective_value:
+            best_individual = deepcopy(child_individual)
+        else:
+            child_individual = deepcopy(best_individual)
+
+    return best_individual
 
 
-def shift_mutation(individual, u, number_of_facilities):
-    p1 = [-1] * u
-    p2 = [-1] * (number_of_facilities - u)
+def shift_mutation(individual, number_of_shifts, number_of_facilities):
+    p1 = [-1] * number_of_shifts
+    p2 = [-1] * (number_of_facilities - number_of_shifts)
 
     for i in range(number_of_facilities):
-        if i < u:
+        if i < number_of_shifts:
             p1[i] = individual.assignments[i]
         else:
-            p2[i - u] = individual.assignments[i]
+            p2[i - number_of_shifts] = individual.assignments[i]
 
     for i in range(number_of_facilities):
-        if i < number_of_facilities - u:
+        if i < number_of_facilities - number_of_shifts:
             individual.assignments[i] = p2[i]
         else:
-            individual.assignments[i] = p1[i - (number_of_facilities - u)]
+            individual.assignments[i] = p1[i - (number_of_facilities - number_of_shifts)]
 
     individual.calculate_objective_value()
 
@@ -235,8 +248,8 @@ def run_genetic_algorithm(
                 distances=distances,
                 crossover_rate=crossover_rate
             )
-            limited_iterated_search(
-                child=child,
+            child = limited_iterated_search(
+                child_individual=child,
                 number_of_iterations=number_of_iterations,
                 number_of_facilities=number_of_facilities
             )
@@ -256,7 +269,7 @@ def run_genetic_algorithm(
                 and (generation - iter_best) > 200 \
                 and (mutation_type == 1):
             for i in range(number_of_individuals):
-                shift_mutation(population[i], u, number_of_facilities)
+                shift_mutation(individual=population[i], number_of_shifts=u, number_of_facilities=number_of_facilities)
 
             u += 1
             if u > number_of_facilities:

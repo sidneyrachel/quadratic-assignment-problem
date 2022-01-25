@@ -51,7 +51,7 @@ def two_opt_improvement(individual, worst_acceptance_probability):
             new_objective_value = individual.objective_value
 
             if new_objective_value > objective_value:
-                probability = random.random()
+                probability = random.uniform(0, 1)
 
                 if probability > worst_acceptance_probability:
                     individual.exchange(facility1=i, facility2=j)  # abort exchange procedure
@@ -67,7 +67,7 @@ def three_opt_improvement(individual, local_improvement_iterations, worst_accept
         new_objective_value = individual.objective_value
 
         if new_objective_value > objective_value:
-            probability = random.random()
+            probability = random.uniform(0, 1)
 
             if probability > worst_acceptance_probability:
                 individual.exchange(facility1=indices[1], facility2=indices[2])
@@ -85,7 +85,7 @@ def four_opt_improvement(individual, local_improvement_iterations, worst_accepta
         new_objective_value = individual.objective_value
 
         if new_objective_value > objective_value:
-            probability = random.random()
+            probability = random.uniform(0, 1)
 
             if probability > worst_acceptance_probability:
                 individual.exchange(facility1=indices[2], facility2=indices[3])
