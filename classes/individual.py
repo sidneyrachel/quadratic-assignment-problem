@@ -37,4 +37,4 @@ class Individual:
         assignment.normalize_final_assignments(assignments=self.assignments)
 
     def __str__(self):
-        return f"{self.assignments} {self.objective_value}"
+        return f'{self.assignments} {self.objective_value}'

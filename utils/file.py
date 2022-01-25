@@ -30,17 +30,17 @@ def read_external_file(filename):
     read_distances = read_matrix(lines=lines, current_idx=current_idx, n=n)
 
     if len(read_flows) != n:
-        raise Exception(f"Flows length is not equal to {n}. Flows length: {len(read_flows)}.")
+        raise Exception(f'Flows length is not equal to {n}. Flows length: {len(read_flows)}.')
 
     for row in read_flows:
         if len(row) != n:
-            raise Exception(f"Flows row length is not equal to {n}. Flows row length: {len(row)}.")
+            raise Exception(f'Flows row length is not equal to {n}. Flows row length: {len(row)}.')
 
     if len(read_distances) != n:
-        raise Exception(f"Distances length is not equal to {n}. Distances length: {len(read_distances)}.")
+        raise Exception(f'Distances length is not equal to {n}. Distances length: {len(read_distances)}.')
 
     for row in read_distances:
         if len(row) != n:
-            raise Exception(f"Distances row length is not equal to {n}. Distances row length: {len(row)}.")
+            raise Exception(f'Distances row length is not equal to {n}. Distances row length: {len(row)}.')
 
     return read_flows, read_distances
