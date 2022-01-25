@@ -138,7 +138,7 @@ if __name__ == '__main__':
             number_of_individuals=3,
             crossover_rate=0.7,
             number_of_iterations=1000,
-            worst_acceptance_probability=0.1,
+            worst_acceptance_probability=0,
             tournament_size=4,
             selection_algorithm='tournament'
         )

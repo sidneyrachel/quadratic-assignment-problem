@@ -137,13 +137,14 @@ def perturbation(child_individual, number_of_perturbations, number_of_facilities
 def limited_iterated_search(
     child_individual,
     number_of_iterations,
-    number_of_facilities
+    number_of_facilities,
+    worst_acceptance_probability
 ):
     best_individual = deepcopy(child_individual)
 
     iterated_local_search.two_opt_improvement(
         individual=child_individual,
-        worst_acceptance_probability=0
+        worst_acceptance_probability=worst_acceptance_probability
     )
 
     if child_individual.objective_value < best_individual.objective_value:
@@ -164,7 +165,7 @@ def limited_iterated_search(
 
         iterated_local_search.two_opt_improvement(
             individual=child_individual,
-            worst_acceptance_probability=0
+            worst_acceptance_probability=worst_acceptance_probability
         )
 
         if child_individual.objective_value < best_individual.objective_value:
@@ -251,7 +252,8 @@ def run_genetic_algorithm(
             child = limited_iterated_search(
                 child_individual=child,
                 number_of_iterations=number_of_iterations,
-                number_of_facilities=number_of_facilities
+                number_of_facilities=number_of_facilities,
+                worst_acceptance_probability=worst_acceptance_probability
             )
             offspring.append(child)
 
