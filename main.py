@@ -9,7 +9,7 @@ import argparse
 config = {
     'iterated_local_search': {
         'worst_acceptance_probability': 0.0,
-        'number_of_iterations': 1000,  # 10000
+        'number_of_iterations': 1000,
         'number_of_individuals': 5,
         'shuffle_tolerance': 10,
         'number_of_shuffles': 15,
@@ -19,6 +19,14 @@ config = {
     'tabu_search': {
         'tabu_size': 20,
         'number_of_iterations': 100
+    },
+    'genetic_algorithm': {
+        'number_of_individuals': 3,
+        'crossover_rate': 0.7,
+        'number_of_iterations': 1000,
+        'worst_acceptance_probability': 0.0,
+        'tournament_size': 4,
+        'selection_algorithm': 'tournament'
     }
 }
 
@@ -102,6 +110,49 @@ if __name__ == '__main__':
         type=int,
         default=config['tabu_search']['number_of_iterations']
     )
+    # genetic algorithm
+    parser.add_argument(
+        '-gnoin',
+        '--genetic_number_of_individuals',
+        help='Number of individuals in genetic algorithm.',
+        type=int,
+        default=config['genetic_algorithm']['number_of_individuals']
+    )
+    parser.add_argument(
+        '-gcr',
+        '--genetic_crossover_rate',
+        help='Crossover rate in genetic algorithm.',
+        type=float,
+        default=config['genetic_algorithm']['crossover_rate']
+    )
+    parser.add_argument(
+        '-gnoit',
+        '--genetic_number_of_iterations',
+        help='Number of iterations in genetic algorithm.',
+        type=int,
+        default=config['genetic_algorithm']['number_of_iterations']
+    )
+    parser.add_argument(
+        '-gwap',
+        '--genetic_worst_acceptance_probability',
+        help='Worst acceptance probability in genetic algorithm.',
+        type=float,
+        default=config['genetic_algorithm']['worst_acceptance_probability']
+    )
+    parser.add_argument(
+        '-gts',
+        '--genetic_tournament_size',
+        help='Tournament size in genetic algorithm.',
+        type=int,
+        default=config['genetic_algorithm']['tournament_size']
+    )
+    parser.add_argument(
+        '-gsa',
+        '--genetic_selection_algorithm',
+        help='Selection algorithm in genetic algorithm. Example: tournament, roulette_wheel.',
+        default=config['genetic_algorithm']['selection_algorithm']
+    )
+
     args = vars(parser.parse_args())
 
     flows, distances = file.read_external_file(args['filename'])
@@ -135,7 +186,7 @@ if __name__ == '__main__':
         assignments, objective_value = genetic_algorithm.run_genetic_algorithm(
             flows=flows,
             distances=distances,
-            number_of_individuals=3,
+            number_of_individuals=4,
             crossover_rate=0.7,
             number_of_iterations=1000,
             worst_acceptance_probability=0,
