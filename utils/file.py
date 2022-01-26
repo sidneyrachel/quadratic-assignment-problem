@@ -14,19 +14,32 @@ def read_matrix(lines, current_idx, n):
     return matrix
 
 
+def strip_empty_line(current_idx, lines):
+    idx = current_idx
+
+    while idx < len(lines) and lines[idx] == '':
+        idx += 1
+
+    return idx
+
+
 def read_external_file(filename):
     filepath = 'qapdata/' + filename
     file = open(filepath, 'r')
     lines = [line.strip() for line in file.readlines()]
 
-    current_idx = 0
+    current_idx = strip_empty_line(current_idx=0, lines=lines)
 
     n = int(lines[current_idx])
 
-    current_idx = current_idx + 2
+    current_idx += 1
+    current_idx = strip_empty_line(current_idx=current_idx, lines=lines)
+
     read_flows = read_matrix(lines=lines, current_idx=current_idx, n=n)
 
-    current_idx = current_idx + n + 1
+    current_idx += n
+    current_idx = strip_empty_line(current_idx=current_idx, lines=lines)
+
     read_distances = read_matrix(lines=lines, current_idx=current_idx, n=n)
 
     if len(read_flows) != n:
