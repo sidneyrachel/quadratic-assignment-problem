@@ -22,7 +22,7 @@ config = {
     },
     'genetic_algorithm': {
         'number_of_individuals': 5,
-        'crossover_rate': 0.7,
+        'crossover_rate': 0.8,
         'number_of_iterations': 1000,
         'worst_acceptance_probability': 0.0,
         'tournament_size': 5,
