@@ -137,15 +137,24 @@ def run_iterated_local_search(
         number_of_individuals=number_of_individuals
     )
 
-    best_individual = None
+    population = sort_population(population=population)
+    best_individual = deepcopy(population[0])
     best_iteration = 0
     count = 0
 
     for idx in range(1, number_of_iterations + 1):
+        for current_individual in population:
+            local_improvement(
+                individual=current_individual,
+                local_improvement_iterations=local_improvement_iterations,
+                worst_acceptance_probability=worst_acceptance_probability,
+                mode=local_improvement_mode
+            )
+
         population = sort_population(population=population)
         new_best_individual = population[0]
 
-        if best_individual is None or new_best_individual.objective_value < best_individual.objective_value:
+        if new_best_individual.objective_value < best_individual.objective_value:
             best_individual = deepcopy(new_best_individual)
             best_iteration = idx
             count = 0
@@ -158,14 +167,6 @@ def run_iterated_local_search(
 
         print(f'[ILS] Iteration: {idx}. '
               f'Objective value: {best_individual.objective_value}.')
-
-        for current_individual in population:
-            local_improvement(
-                individual=current_individual,
-                local_improvement_iterations=local_improvement_iterations,
-                worst_acceptance_probability=worst_acceptance_probability,
-                mode=local_improvement_mode
-            )
 
     print(f'[ILS] Best individual found on iteration: {best_iteration}.')
     best_individual.normalize_final_assignments()
