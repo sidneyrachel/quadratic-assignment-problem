@@ -149,7 +149,7 @@ def limited_iterated_search(
 
     number_of_perturbations = 2
 
-    max_iterations = max(int(number_of_facilities * 0.1), 1)
+    max_iterations = max(int(number_of_facilities * 0.2), 1)
 
     for idx in range(max_iterations):
         perturbation(
