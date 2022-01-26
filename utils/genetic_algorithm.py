@@ -70,7 +70,8 @@ def crossover(
     number_of_facilities,
     flows,
     distances,
-    crossover_rate
+    crossover_rate,
+    number_of_trials
 ):
     can_crossover = uniform(0, 1) <= crossover_rate
 
@@ -87,8 +88,6 @@ def crossover(
         if parent1.assignments[i] == parent2.assignments[i]:
             child_assignments[i] = parent1.assignments[i]
             placed_locations[parent1.assignments[i]] = True
-
-    number_of_trials = max(int(number_of_facilities * 0.2), 1)
 
     best_child_individual = None
 
@@ -135,7 +134,8 @@ def perturbation(individual, number_of_perturbations, number_of_facilities):
 def limited_iterated_search(
     child_individual,
     number_of_facilities,
-    worst_acceptance_probability
+    worst_acceptance_probability,
+    max_iterations
 ):
     best_individual = deepcopy(child_individual)
 
@@ -148,8 +148,6 @@ def limited_iterated_search(
         best_individual = deepcopy(child_individual)
 
     number_of_perturbations = 2
-
-    max_iterations = max(int(number_of_facilities * 0.2), 1)
 
     for idx in range(max_iterations):
         perturbation(
@@ -223,11 +221,13 @@ def run_genetic_algorithm(
     last_mutated_generation = 0
     mutation_type = 1
     best_iteration = 0
+    half_number_of_individuals = int(number_of_individuals * 0.5)
+    number_of_trials = max(int(number_of_facilities * 0.2), 1)
 
     for generation in range(1, number_of_iterations + 1):
         offspring = []
 
-        while len(offspring) < int(number_of_individuals * 0.5):
+        while len(offspring) < half_number_of_individuals:
             if selection_algorithm == 'roulette_wheel':
                 [parent1_individual, parent2_individual] = roulette_wheel_selection(
                     number_of_selections=2,
@@ -249,13 +249,15 @@ def run_genetic_algorithm(
                 number_of_facilities=number_of_facilities,
                 flows=flows,
                 distances=distances,
-                crossover_rate=crossover_rate
+                crossover_rate=crossover_rate,
+                number_of_trials=number_of_trials
             )
 
             improved_child_individual = limited_iterated_search(
                 child_individual=child_individual,
                 number_of_facilities=number_of_facilities,
-                worst_acceptance_probability=worst_acceptance_probability
+                worst_acceptance_probability=worst_acceptance_probability,
+                max_iterations=number_of_trials
             )
 
             offspring.append(improved_child_individual)
@@ -291,7 +293,7 @@ def run_genetic_algorithm(
                 for i in range(number_of_individuals):
                     perturbation(
                         individual=population[i],
-                        number_of_perturbations=max(int(number_of_facilities * 0.2), 1),
+                        number_of_perturbations=number_of_trials,
                         number_of_facilities=number_of_facilities
                     )
 
