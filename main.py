@@ -21,11 +21,11 @@ config = {
         'number_of_iterations': 100
     },
     'genetic_algorithm': {
-        'number_of_individuals': 3,
+        'number_of_individuals': 5,
         'crossover_rate': 0.7,
         'number_of_iterations': 1000,
         'worst_acceptance_probability': 0.0,
-        'tournament_size': 4,
+        'tournament_size': 5,
         'selection_algorithm': 'tournament'
     }
 }
@@ -163,7 +163,7 @@ if __name__ == '__main__':
         assignments, objective_value = iterated_local_search.run_iterated_local_search(
             flows=flows,
             distances=distances,
-            number_of_individuals=args['iterative_number_of_individuals'],
+            number_of_individuals=max(args['iterative_number_of_individuals'], int(0.1 * len(flows))),
             number_of_iterations=args['iterative_number_of_iterations'],
             shuffle_tolerance=args['iterative_shuffle_tolerance'],
             number_of_shuffles=args['iterative_number_of_shuffles'],
@@ -186,7 +186,7 @@ if __name__ == '__main__':
         assignments, objective_value = genetic_algorithm.run_genetic_algorithm(
             flows=flows,
             distances=distances,
-            number_of_individuals=args['genetic_number_of_individuals'],
+            number_of_individuals=max(args['genetic_number_of_individuals'], int(0.1 * len(flows))),
             crossover_rate=args['genetic_crossover_rate'],
             number_of_iterations=args['genetic_number_of_iterations'],
             worst_acceptance_probability=args['genetic_worst_acceptance_probability'],
