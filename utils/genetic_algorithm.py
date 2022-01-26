@@ -88,9 +88,7 @@ def crossover(
             child_assignments[i] = parent1.assignments[i]
             placed_locations[parent1.assignments[i]] = True
 
-    number_of_trials = int(number_of_facilities * 0.2)
-    if number_of_trials == 0:
-        number_of_trials = 1
+    number_of_trials = max(int(number_of_facilities * 0.2), 1)
 
     best_child_individual = None
 
@@ -129,14 +127,13 @@ def crossover(
 
 
 def perturbation(individual, number_of_perturbations, number_of_facilities):
-    for idx in range(number_of_perturbations):
+    for idx in range(max(number_of_perturbations, 1)):
         indices = np.random.permutation(np.arange(number_of_facilities))
         individual.exchange(facility1=indices[0], facility2=indices[1])
 
 
 def limited_iterated_search(
     child_individual,
-    number_of_iterations,
     number_of_facilities,
     worst_acceptance_probability
 ):
@@ -152,7 +149,9 @@ def limited_iterated_search(
 
     number_of_perturbations = 2
 
-    for idx in range(int(number_of_iterations * 0.1)):
+    max_iterations = max(int(number_of_facilities * 0.1), 1)
+
+    for idx in range(max_iterations):
         perturbation(
             individual=child_individual,
             number_of_perturbations=number_of_perturbations,
@@ -255,7 +254,6 @@ def run_genetic_algorithm(
 
             improved_child_individual = limited_iterated_search(
                 child_individual=child_individual,
-                number_of_iterations=number_of_iterations,
                 number_of_facilities=number_of_facilities,
                 worst_acceptance_probability=worst_acceptance_probability
             )
