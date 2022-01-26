@@ -312,6 +312,7 @@ def run_genetic_algorithm(
         print(f'[GA] Iteration: {generation}. '
               f'Objective value: {best_individual.objective_value}.')
 
+    print(f'[GA] Best individual found on iteration: {best_iteration}.')
     best_individual.normalize_final_assignments()
 
     return best_individual.assignments, best_individual.objective_value
