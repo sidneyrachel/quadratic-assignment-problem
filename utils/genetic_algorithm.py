@@ -127,7 +127,7 @@ def crossover(
 
 
 def perturbation(individual, number_of_perturbations, number_of_facilities):
-    for idx in range(max(number_of_perturbations, 1)):
+    for idx in range(number_of_perturbations):
         indices = np.random.permutation(np.arange(number_of_facilities))
         individual.exchange(facility1=indices[0], facility2=indices[1])
 
@@ -291,7 +291,7 @@ def run_genetic_algorithm(
                 for i in range(number_of_individuals):
                     perturbation(
                         individual=population[i],
-                        number_of_perturbations=int(number_of_facilities * 0.2),
+                        number_of_perturbations=max(int(number_of_facilities * 0.2), 1),
                         number_of_facilities=number_of_facilities
                     )
 
