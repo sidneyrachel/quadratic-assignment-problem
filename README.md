@@ -3,12 +3,12 @@ This repository contains implementations of iterated local search (ILS), improve
 
 ## Prerequisite
 To be able to run the program, you need to:
-2. Install [MiniZinc](https://www.minizinc.org/) 2.5.0+.
-3. Install [Python](https://www.python.org/) 3.6.0+.
-4. Install [MiniZinc Python library](https://pypi.org/project/minizinc/): `pip install minizinc`.
-5. Install [NumPy Python library](https://pypi.org/project/numpy/): `pip install numpy`.
-6. Download `qapdata.tar.gz` from [QAPLIB](https://www.opt.math.tugraz.at/qaplib/inst.html).
-7. Unzip `qapdata.tar.gz` to `qapdata` and place the folder inside the root folder.
+1. Install [MiniZinc](https://www.minizinc.org/) 2.5.0+.
+2. Install [Python](https://www.python.org/) 3.6.0+.
+3. Install [MiniZinc Python library](https://pypi.org/project/minizinc/): `pip install minizinc`.
+4. Install [NumPy Python library](https://pypi.org/project/numpy/): `pip install numpy`.
+5. Download `qapdata.tar.gz` from [QAPLIB](https://www.opt.math.tugraz.at/qaplib/inst.html).
+6. Unzip `qapdata.tar.gz` to `qapdata` and place the folder inside the root folder.
 
 ## Run the Program
 ### Iterated Local Search
