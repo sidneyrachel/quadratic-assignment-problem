@@ -12,9 +12,7 @@ To be able to run the program, you need to:
 
 ## Run the Program
 ### Iterated Local Search
-Run the following command in the terminal:
-`python main.py -a ils -f <instance-filename>`
-The available options for the parameters are:
+Run the following command in the terminal: `python main.py -a ils -f <instance-filename>`. The available options for the parameters are:
 | Command | Default Value | Description |
 |--|--|--|
 | `-iwap` | `0.0` | Worst acceptance probability used for local improvement.  |
@@ -26,9 +24,7 @@ The available options for the parameters are:
 | `-ilii` | `1000` | Number of local improvement iterations. It is only used in `three_opt` and `four_opt`. |
 
 ### Improved Hybrid Genetic Algorithm
-Run the following command in the terminal:
-`python main.py -a ga -f <instance-filename>`
-The available options for the parameters are:
+Run the following command in the terminal: `python main.py -a ga -f <instance-filename>`. The available options for the parameters are:
 | Command | Default Value | Description |
 |--|--|--|
 | `-gnoin` | `max(5, int(0.1 * number of facilities))` | Number of individuals in the population. |
@@ -39,14 +35,11 @@ The available options for the parameters are:
 | `-gsa` | `tournament` | Selection algorithm: `roulette_wheel`, `tournament`. |
 
 ### Tabu Search
-Run the following command in the terminal:
-`python main.py -a ts -f <instance-filename>`
-The available options for the parameters are:
+Run the following command in the terminal: `python main.py -a ts -f <instance-filename>`. The available options for the parameters are:
 | Command | Default Value | Description |
 |--|--|--|
 | `-ts` | `20` | Tabu size. |
 | `-tnoit` | `100` | Number of iterations. |
 
 ### Constraint Solving
-Run the following command in the terminal:
-`python main.py -a cs -f <instance-filename>`
+Run the following command in the terminal: `python main.py -a cs -f <instance-filename>`.
